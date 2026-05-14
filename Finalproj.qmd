@@ -33,3 +33,7 @@ The `echo: false` option disables the printing of code (only output is displayed
 ```{r}
 5*5
 ```
+```{r}
+read.csv("Lottery_Powerball_Winning_Numbers__Beginning_2010.csv")
+```
+
