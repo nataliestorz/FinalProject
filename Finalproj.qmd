@@ -33,7 +33,34 @@ The `echo: false` option disables the printing of code (only output is displayed
 ```{r}
 5*5
 ```
+
+
+
+#Load in the data/functions
 ```{r}
-read.csv("Lottery_Powerball_Winning_Numbers__Beginning_2010.csv")
+Lottery_data <- read.csv("Lottery_Powerball_Winning_Numbers__Beginning_2010.csv")
+```
+
+```{r}
+library(tidyverse)
+library(purrr)
+library(knitr)
+```
+
+
+#Dataset description:
+This dataset includes simply three columns and 1939 rows. Each row represents a 
+recorded Powerball lottery winning ticket drawing in New York state starting since 2010. The three columns are simply the date of the drawing of the winning ticket, the numbers of the winning ticket, and the randomly drawn (x1 - x10) multiplier associated with the power play for that drawing. This multiplier represents the multiplier on the non-jackpot winnings for those who chose to pay extra for the power play feature of the lottery. Put simply, paying for the power play feature means that if you win $100 in non-jackpot winnings, and the random multiplier drawn for that particular drawing was three, that you would instead have earned $300 in winnings.  
+
+# Data manipulation/cleaning
+
+## Question 1: Create a new column which identifies whether or not the number 11 is present in the winning ticket.
+
+
+```{r}
+# Code for question 1 
+Lottery_data <- Lottery_data |> 
+  mutate(contains_11 = str_detect(Winning.Numbers,
+                                       pattern = "\\b11\\b"))
 ```
 
