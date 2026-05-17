@@ -64,3 +64,13 @@ Lottery_data <- Lottery_data |>
                                        pattern = "\\b11\\b"))
 ```
 
+## Question 2: Create a new column 'year' which extracts the year from all the drawing dates in the dataset.
+
+
+```{r}
+# Code for question 2
+Lottery_data <- Lottery_data |> 
+  mutate(Draw.Date = mdy(Draw.Date),
+         year = year(Draw.Date))
+```
+
