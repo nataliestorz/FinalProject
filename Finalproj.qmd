@@ -49,24 +49,26 @@ Lottery_data <- read.csv("Lottery_Powerball_Winning_Numbers__Beginning_2010.csv"
 library(tidyverse)
 library(purrr)
 library(knitr)
+library(kableExtra)
 ```
 
-#Dataset description: This dataset includes simply three columns and 1939 rows. Each row represents a recorded Powerball lottery winning ticket drawing in New York state starting since 2010. The three columns are simply the date of the drawing of the winning ticket, the numbers of the winning ticket, and the randomly drawn (x1 - x10) multiplier associated with the power play for that drawing. This multiplier represents the multiplier on the non-jackpot winnings for those who chose to pay extra for the power play feature of the lottery. Put simply, paying for the power play feature means that if you win \$100 in non-jackpot winnings, and the random multiplier drawn for that particular drawing was three, that you would instead have earned \$300 in winnings.
+## Question 1: Visualize the relationship between students' majors (by category) and average weekly use of generative AI (in hours) using ggplot and a relevant graph/chart.
 
-# Data manipulation/cleaning
-
-## Question 1: Each winning ticket consists of 5 randomly drawn numbers and one powerball number (the last number on the ticket), create a new column for each one of these numbers separately (num1, num2, num3, num4, num5, powerball).
 
 ```{r}
 # Code for question 1
-lottery_clean <- Lottery_data |> 
-  mutate(numbers_list = str_extract_all(Winning.Numbers, "\\d+")) |> 
-  mutate(num1 = as.numeric(map_chr(numbers_list, 1)),
-         num2 = as.numeric(map_chr(numbers_list, 2)),
-         num3 = as.numeric(map_chr(numbers_list, 3)),
-         num4 = as.numeric(map_chr(numbers_list, 4)),
-         num5 = as.numeric(map_chr(numbers_list, 5)),
-         powerball = as.numeric(map_chr(numbers_list, 6))) |> 
-  select(-numbers_list)
+ai_impact_data |> 
+  group_by(Major_Category) |> 
+  summarize(mean_hours = mean(Weekly_GenAI_Hours)) |> 
+  ggplot(aes(x = mean_hours,
+             y = Major_Category,
+             fill = Major_Category)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Average Weekly Hours",
+       y = "",
+       subtitle = "Average Hours of AI Use Weekly by Major Category")
+  
          
 ```
+
+
