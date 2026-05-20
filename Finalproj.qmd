@@ -42,10 +42,6 @@ ai_impact_data <- read.csv("AI_student_impact.csv")
 
 
 ```{r}
-Lottery_data <- read.csv("Lottery_Powerball_Winning_Numbers__Beginning_2010.csv")
-```
-
-```{r}
 library(tidyverse)
 library(purrr)
 library(knitr)
