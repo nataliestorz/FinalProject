@@ -34,9 +34,13 @@ The `echo: false` option disables the printing of code (only output is displayed
 5*5
 ```
 
-
-
 #Load in the data/functions
+
+```{r}
+ai_impact_data <- read.csv("AI_student_impact.csv")
+```
+
+
 ```{r}
 Lottery_data <- read.csv("Lottery_Powerball_Winning_Numbers__Beginning_2010.csv")
 ```
@@ -47,10 +51,7 @@ library(purrr)
 library(knitr)
 ```
 
-
-#Dataset description:
-This dataset includes simply three columns and 1939 rows. Each row represents a 
-recorded Powerball lottery winning ticket drawing in New York state starting since 2010. The three columns are simply the date of the drawing of the winning ticket, the numbers of the winning ticket, and the randomly drawn (x1 - x10) multiplier associated with the power play for that drawing. This multiplier represents the multiplier on the non-jackpot winnings for those who chose to pay extra for the power play feature of the lottery. Put simply, paying for the power play feature means that if you win $100 in non-jackpot winnings, and the random multiplier drawn for that particular drawing was three, that you would instead have earned $300 in winnings.  
+#Dataset description: This dataset includes simply three columns and 1939 rows. Each row represents a recorded Powerball lottery winning ticket drawing in New York state starting since 2010. The three columns are simply the date of the drawing of the winning ticket, the numbers of the winning ticket, and the randomly drawn (x1 - x10) multiplier associated with the power play for that drawing. This multiplier represents the multiplier on the non-jackpot winnings for those who chose to pay extra for the power play feature of the lottery. Put simply, paying for the power play feature means that if you win \$100 in non-jackpot winnings, and the random multiplier drawn for that particular drawing was three, that you would instead have earned \$300 in winnings.
 
 # Data manipulation/cleaning
 
@@ -69,4 +70,3 @@ lottery_clean <- Lottery_data |>
   select(-numbers_list)
          
 ```
-
