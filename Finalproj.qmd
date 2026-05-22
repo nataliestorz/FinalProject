@@ -46,14 +46,51 @@ library(tidyverse)
 library(purrr)
 library(knitr)
 library(kableExtra)
+library(ggplot2)
 ```
 
-## Question 1: Visualize the relationship between students' majors (by category) and average weekly use of generative AI (in hours) using ggplot and a relevant graph/chart.
 
+# Dataset description: 
+This dataset includes sixteen columns and 50000 rows. Each row represents an individual student, shown by their student ID number. The columns include information describing student interactions with AI, spanning academic outcomes, behavioral patterns, institutional context, and psychological well-being. Students are categorized by their major, year of study, pre and post-semester GPA, hours studying with and without use of AI, whether or not they have a paid subscription, their perceived dependency on AI, anxiety level during exams, and burnout risk. 
+
+Data dictionary: 
+[Download the Data Dictionary](AI_Impact_Students_Data_Dictionary.docx)
+
+
+## Question 1: Clean Data
+Before analyzing the dataset, we need to ensure each variable has an appropriate data type.
+
+Some variables represent:
+identifiers,
+categories,
+or numerical measurements.
+
+Begin by converting variables to the most appropriate data type. 
 
 ```{r}
 # Code for question 1
-ai_impact_data |> 
+clean_ai_impact <- ai_impact_data |> 
+  mutate(
+    Student_ID = as.character(Student_ID),
+    Major_Category = as.factor(Major_Category),
+    Year_of_Study = as.factor(Year_of_Study),
+    Prompt_Engineering_Skill = as.factor(Prompt_Engineering_Skill),
+    Paid_Subscription = as.factor(Paid_Subscription),
+    Burnout_Risk_Level = as.factor(Burnout_Risk_Level),
+    )
+
+```
+
+Before studying student outcomes, let’s first understand how students are using GenAI tools.
+
+## Question 2: Before studying student outcomes, let’s first understand how students are using GenAI tools.
+
+Visualize the relationship between students' majors (by category) and average weekly use of generative AI (in hours) using ggplot and a relevant graph/chart.
+
+
+```{r}
+# Code for question 2
+clean_ai_impact |> 
   group_by(Major_Category) |> 
   summarize(mean_hours = mean(Weekly_GenAI_Hours)) |> 
   ggplot(aes(x = mean_hours,
@@ -63,8 +100,6 @@ ai_impact_data |>
   labs(x = "Average Weekly Hours",
        y = "",
        subtitle = "Average Hours of AI Use Weekly by Major Category")
-  
-         
-```
 
+```
 
