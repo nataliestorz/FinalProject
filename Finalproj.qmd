@@ -49,9 +49,15 @@ Lottery_data <- read.csv("Lottery_Powerball_Winning_Numbers__Beginning_2010.csv"
 library(tidyverse)
 library(purrr)
 library(knitr)
+library(ggplot2)
 ```
 
-#Dataset description: This dataset includes sixteen columns and 50000 rows. Each row represents an individual student, shown by their student ID number. The columns include information describing student interactions with AI, spanning academic outcomes, behavioral patterns, institutional context, and psychological well-being. Students are categorized by their major, year of study, pre and post-semester GPA, hours studying with and without use of AI, whether or not they have a paid subscription, their percieved dependency on AI, anxiety level during exams, and burnout risk. 
+# Dataset description: 
+This dataset includes sixteen columns and 50000 rows. Each row represents an individual student, shown by their student ID number. The columns include information describing student interactions with AI, spanning academic outcomes, behavioral patterns, institutional context, and psychological well-being. Students are categorized by their major, year of study, pre and post-semester GPA, hours studying with and without use of AI, whether or not they have a paid subscription, their percieved dependency on AI, anxiety level during exams, and burnout risk. 
+
+Data dictionary: 
+[Download the Data Dictionary](AI_Impact_Students_Data_Dictionary.docx)
+
 
 # Data manipulation/cleaning
 
@@ -70,3 +76,44 @@ lottery_clean <- Lottery_data |>
   select(-numbers_list)
          
 ```
+
+#1. Clean Data
+Before analyzing the dataset, we need to ensure each variable has an appropriate data type.
+
+Some variables represent:
+identifiers,
+categories,
+or numerical measurements.
+
+Begin by converting variables to the most appropriate data type. 
+```{r}
+# Code for question 1
+clean_ai_impact <- ai_impact_data |> 
+  mutate(
+    Student_ID = as.character(Student_ID),
+    Major_Category = as.factor(Major_Category),
+    Year_of_Study = as.factor(Year_of_Study),
+    Prompt_Engineering_Skill = as.factor(Prompt_Engineering_Skill),
+    Paid_Subscription = as.factor(Paid_Subscription),
+    Burnout_Risk_Level = as.factor(Burnout_Risk_Level),
+    )
+
+```
+
+Before studying student outcomes, let’s first understand how students are using GenAI tools.
+
+# 2. Create a visualization showing the distribution of Weekly_GenAI_Hours.
+
+
+```{r}
+# Code for question 2
+clean_ai_impact |>
+  ggplot(aes(x = Weekly_GenAI_Hours)) +
+  geom_histogram(binwidth = 4,
+                 color = "red") +
+  scale_x_continuous(breaks = seq(0, 40, by = 2))+
+  labs(y = "Number of Students",
+       x = "Hours per week using generative AI")
+
+```
+
