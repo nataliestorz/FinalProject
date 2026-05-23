@@ -48,10 +48,11 @@ clean_ai_impact <- ai_impact_data |>
 
 ```
 
+Before studying student outcomes, let’s first understand how students are using GenAI tools.
 
-## Question 2: Before studying student outcomes, let’s first understand how students are using GenAI tools.
-
+## Question 2: Visualize 
 Visualize the relationship between students' majors (by category) and average weekly use of generative AI (in hours) using ggplot and a relevant graph/chart.
+
 
 ```{r}
 # Code for question 2
