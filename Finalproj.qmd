@@ -107,9 +107,25 @@ The results suggest that higher weekly GenAI usage is most strongly associated w
 In contrast, AI usage had weak negative correlations with post-semester GPA, skill retention, and traditional study hours. This may suggest that heavier AI use is associated with spending less time using traditional study methods and slightly lower skill retention, although most of these relationships are fairly weak.
 
 
+## Question 4: Use iteration to compute summary statistics across multiple numeric columns.
 
+Write a function called `numeric_summary` that takes a numeric vector and returns a named vector with the mean, median, and standard deviation. Then use `map()` to apply it to the following columns: `Weekly_GenAI_Hours`, `Traditional_Study_Hours`, `Pre_Semester_GPA`, `Post_Semester_GPA`, and `Skill_Retention_Score`.
 
 ```{r}
-2+2
+numeric_summary <- function(x) {
+  c(
+    mean = round(mean(x, na.rm = TRUE), 3),
+    median = round(median(x, na.rm = TRUE), 3),
+    sd = round(sd(x, na.rm = TRUE), 3)
+  )
+}
+numeric_cols <- clean_ai_impact |>
+  select(Weekly_GenAI_Hours, Traditional_Study_Hours, 
+         Pre_Semester_GPA, Post_Semester_GPA, 
+         Skill_Retention_Score)
+
+map(numeric_cols, numeric_summary)
+
+
 ```
 
