@@ -17,7 +17,7 @@ library(purrr)
 library(knitr)
 library(kableExtra)
 library(ggplot2)
-
+library(broom)
 ```
 
 # Dataset description:
@@ -126,16 +126,83 @@ numeric_cols <- clean_ai_impact |>
 map(numeric_cols, numeric_summary)
 ```
 
+# Significance Testing
+
+
+Now that we have a good idea of the students in our dataset, and how much they are using generative AI, let's now test its significance on students' respective GPAs by running simple linear regressions
+
+
+## Question 5: We now want to test the impact that Generative AI use has had on students' GPAs. Let's begin by running a simple regression with post-semester GPA as the response variable, and traditional study hours (no AI use) as our explanatory variable. (No need for any code, just write in the document.) 
+
+:::{.callout-tip}
+You may want to look at specific LaTeX notation when writing these in your quarto document!
+:::
+
+y = post-semester GPA
+x = traditional study hours
+
+population equation:
+
+$GPA = \beta_0 + \beta_1 (num_hours) + \varepsilon_i$
+
+sample equation:
+
+$\widehat{GPA} = \hat{\beta}_0 + \hat{\beta}_1 (numhours)$
+
+## Question 6: Before we run our regression, let's check that all the L.I.N.E. conditions are met first. 
+:::{.callout-note}
+You will neeed to create some graphs in order to show that these conditions are satisfied
+:::
+
+```{r}
+# Run the regression model we just defined and save it to the name "GPA_lm"
+GPA_lm <- lm(Post_Semester_GPA ~ Traditional_Study_Hours,
+             data = ai_impact_data)
+
+```
 
 
 
-## Question 5: Define what the simple linear regression model is going to be (write out the equation, no code needed)
+```{r}
+# Check that the linearity condition is satisfied
 
+ai_impact_data |> 
+  ggplot(aes(x = Traditional_Study_Hours,
+           y = Post_Semester_GPA)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(x = "Number of hours studied weekly without AI Use",
+       y = "Student GPA")
 
-## Question 6: verify conditions are met (LINE conditions)
+```
 
+Although there is a large cluster of points due to number of observations in our data, we still see pretty clear positive linear relationship between study hours and student GPA. We can pretty safely say that the linearity condition is satisfied. 
 
-## Question 7: run regression and get summary 
+:::{.callout-note}
+Since every observation in the data represents a different student and the data is cross-sectional (not time series) the independence assumption is considered to be satisfied
+:::
+
+```{r}
+# Check that the normality condition is met
+plot(GPA_lm, which = 2)
+
+```
+
+Examining the QQ Plot we generated, we can see that while there is some deviation from perfect normality (especially near the tails), given our very large sample size and the fact that our response variable (GPA) is bounded, the normailty condition is reasonably satisfied for the purposes of our analysis.
+
+```{r}
+# Check for equal variance
+GPA_lm |> 
+  augment() |> 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", 
+             color = "red", lwd = 1.5)
+```
+
+Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a fan shape to the residuals as opposed to the completely random cluster we hoped to get. They are also not fully clustered around 0 which we would expect to see if the condition was met. However, again, given the amount of observations in our data, and the fact that our response variable is bounded, we can still assume that this condition is satisfied so we can go ahead and use our model to approximate our targeted relationship.
+
+## Question 7: get summary of model
 
 
 ## Question 8: does some variable improve the model, or not
