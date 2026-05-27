@@ -125,4 +125,3 @@ numeric_cols <- clean_ai_impact |>
 
 map(numeric_cols, numeric_summary)
 ```
-
