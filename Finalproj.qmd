@@ -5,7 +5,6 @@ editor: visual
 embed-resources: TRUE
 ---
 
-
 #Load in the data/packages
 
 ```{r}
@@ -50,9 +49,9 @@ clean_ai_impact <- ai_impact_data |>
 
 Before studying student outcomes, let’s first understand how students are using GenAI tools.
 
-## Question 2: Visualize 
-Visualize the relationship between students' majors (by category) and average weekly use of generative AI (in hours) using ggplot and a relevant graph/chart.
+## Question 2: Visualize
 
+Visualize the relationship between students' majors (by category) and average weekly use of generative AI (in hours) using ggplot and a relevant graph/chart.
 
 ```{r}
 # Code for question 2
@@ -73,15 +72,12 @@ clean_ai_impact |>
 
 Create a character vector called student_outcomes containing the following variables:
 
-"Post_Semester_GPA"
-"Skill_Retention_Score"
-"Anxiety_Level_During_Exams"
-"Traditional_Study_Hours"
-"Perceived_AI_Dependency"
+"Post_Semester_GPA" "Skill_Retention_Score" "Anxiety_Level_During_Exams" "Traditional_Study_Hours" "Perceived_AI_Dependency"
 
 Calculate the correlation between Weekly_GenAI_Hours and each outcome variable, and store your results in a tibble with nice formatting and titles.
 
 Describe the results in 2-3 sentences.
+
 ```{r}
 student_outcomes <- c(
   "Post_Semester_GPA",
@@ -105,6 +101,15 @@ cor_table <- tibble(
 
 cor_table
 ```
+
 The results suggest that higher weekly GenAI usage is most strongly associated with greater perceived AI dependency, with a relatively strong positive correlation of 0.67. Students who reported using AI more frequently also tended to report slightly higher anxiety during exams.
 
 In contrast, AI usage had weak negative correlations with post-semester GPA, skill retention, and traditional study hours. This may suggest that heavier AI use is associated with spending less time using traditional study methods and slightly lower skill retention, although most of these relationships are fairly weak.
+
+
+
+
+```{r}
+2+2
+```
+
