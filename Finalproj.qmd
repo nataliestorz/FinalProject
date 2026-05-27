@@ -125,7 +125,4 @@ numeric_cols <- clean_ai_impact |>
          Skill_Retention_Score)
 
 map(numeric_cols, numeric_summary)
-
-
 ```
-
