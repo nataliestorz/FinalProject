@@ -18,6 +18,7 @@ library(knitr)
 library(kableExtra)
 library(ggplot2)
 library(broom)
+library(gt)
 ```
 
 # Dataset description:
@@ -128,18 +129,15 @@ map(numeric_cols, numeric_summary)
 
 # Significance Testing
 
-
 Now that we have a good idea of the students in our dataset, and how much they are using generative AI, let's now test its significance on students' respective GPAs by running simple linear regressions
 
+## Question 5: We now want to test the impact that Generative AI use has had on students' GPAs. Let's begin by running a simple regression with post-semester GPA as the response variable, and traditional study hours (no AI use) as our explanatory variable. (No need for any code, just write in the document.)
 
-## Question 5: We now want to test the impact that Generative AI use has had on students' GPAs. Let's begin by running a simple regression with post-semester GPA as the response variable, and traditional study hours (no AI use) as our explanatory variable. (No need for any code, just write in the document.) 
-
-:::{.callout-tip}
+::: callout-tip
 You may want to look at specific LaTeX notation when writing these in your quarto document!
 :::
 
-y = post-semester GPA
-x = traditional study hours
+y = post-semester GPA x = traditional study hours
 
 population equation:
 
@@ -149,8 +147,9 @@ sample equation:
 
 $\widehat{GPA} = \hat{\beta}_0 + \hat{\beta}_1 (numhours)$
 
-## Question 6: Before we run our regression, let's check that all the L.I.N.E. conditions are met first. 
-:::{.callout-note}
+## Question 6: Before we run our regression, let's check that all the L.I.N.E. conditions are met first.
+
+::: callout-note
 You will neeed to create some graphs in order to show that these conditions are satisfied
 :::
 
@@ -160,8 +159,6 @@ GPA_lm <- lm(Post_Semester_GPA ~ Traditional_Study_Hours,
              data = ai_impact_data)
 
 ```
-
-
 
 ```{r}
 # Check that the linearity condition is satisfied
@@ -176,9 +173,9 @@ ai_impact_data |>
 
 ```
 
-Although there is a large cluster of points due to number of observations in our data, we still see pretty clear positive linear relationship between study hours and student GPA. We can pretty safely say that the linearity condition is satisfied. 
+Although there is a large cluster of points due to number of observations in our data, we still see pretty clear positive linear relationship between study hours and student GPA. We can pretty safely say that the linearity condition is satisfied.
 
-:::{.callout-note}
+::: callout-note
 Since every observation in the data represents a different student and the data is cross-sectional (not time series) the independence assumption is considered to be satisfied
 :::
 
@@ -204,6 +201,85 @@ Using the fitted residuals plot here, we can see some issues with the equal vari
 
 ## Question 7: get summary of model
 
+<<<<<<< HEAD
+## Question 8: does some variable improve the model, or not
+
+-   does adding weekly gen ai help explain any of the variation in post-semester gpa?
+
+```{r}
+new_GPA_lm = lm(Post_Semester_GPA~Traditional_Study_Hours+Weekly_GenAI_Hours, data = clean_ai_impact)
+```
+
+## Question 9: Create a formatted regression summary table to compare both models.
+
+Your table should:
+
+-   display the regression coefficients for each model
+-   include:
+    -   intercept estimates
+    -   coefficient estimates
+    -   p-values
+-   clearly separate the results for each model using grouped row labels
+-   rename coefficient terms so they are reader-friendly
+-   round coefficient estimates to 3 decimal places
+-   display very small p-values as \<.001
+-   hide unnecessary regression output columns
+
+::: callout-tip
+You will want to store both regression models inside a tibble and consider using a list-column to hold the model objects. Use map() together with broom::tidy() to extract regression coefficients from each model, and use unnest() to expand the coefficient results into rows. Use gt() or kableExtra() to create the final formatted table. View example from week 9 class slides for extra help.
+:::
+
+In addition to the table, briefly explain in 1-2 sentences what the results suggest about the predictors of post-semester GPA.
+
+```{r}
+# Create a formatted regression table
+tibble(
+  model = c("GPA_lm", "new_GPA_lm"),
+  fit = list(GPA_lm, new_GPA_lm)) |> 
+  mutate(coefs = map(fit, ~ broom::tidy(.x))) |> 
+  select(model, coefs) |> 
+  unnest(cols = coefs) |> 
+  mutate(term = fct_recode(
+    .f = term,
+    "Intercept" = "(Intercept)",
+    "Traditional Study Hours" = "traditional_study_hours",
+    "Weekly GenAI Usage" = "weekly_genai_usage"
+  )) |> 
+  select(-std.error, -statistic) |> 
+  mutate(p.value = case_when(
+    p.value < .001 ~ "<.001",
+    TRUE ~ as.character(round(p.value, 3))
+  )) |>
+  gt(groupname_col = "model") |>
+  fmt_number(
+    estimate,
+    decimals = 3
+  ) |>
+  tab_row_group(
+    label = md("**Model 2: Traditional Study Hours + Weekly GenAI Usage**"),
+    rows = model == "Model 2"
+  ) |>
+  tab_row_group(
+    label = md("**Model 1: Traditional Study Hours Only**"),
+    rows = model == "Model 1"
+  ) |>
+  cols_hide(model) |>
+  cols_align(
+    align = "left",
+    columns = term
+  ) |>
+  tab_style(
+    style = cell_fill(color = "gray85"),
+    locations = cells_row_groups()
+  ) |>
+  cols_label(
+    term = md("**Model & Term**"),
+    estimate = md("**Est. Coef.**"),
+    p.value = md("**p-value**")
+  )
+```
+pchisq(7.007, df = ?, lower.tail = FALSE)
+=======
 ```{r}
 
 summary(GPA_lm)
@@ -227,3 +303,4 @@ anova(GPA_lm, GPA_lm2)
 
 ## Question 9: use example from wk 9 notes called "Example Cont. Regression Coefficients" to create a table showing differences in intercepts and coefficients between the 2 models created in Q5 and Q8
 >>>>>>> 5d9b0ba5ece7b075b995779515ab8fb6e3ec80bd
+>>>>>>> bf80115109ea208bf99db892d7f41964408b698e
