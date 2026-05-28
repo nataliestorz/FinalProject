@@ -211,8 +211,25 @@ Using the fitted residuals plot here, we can see some issues with the equal vari
 
 ## Question 7: get summary of model
 
+```{r}
+
+summary(GPA_lm)
+
+```
+The model shows that Traditional_Study_Hours is a statistically significant predictor of Post_Semester_GPA (p < 0.001). For each hour of traditional study per week, GPA is estimated to increase by approximately [coefficient] points, with an intercept of [intercept]. The R^2 value of [value] suggests that traditional study hours alone explains only a small portion of the variation in GPA.
+
+
 
 ## Question 8: does some variable improve the model, or not
+
+```{r}
+GPA_lm2 <- lm(Post_Semester_GPA ~ Traditional_Study_Hours + Weekly_GenAI_Hours,
+              data = ai_impact_data)
+
+summary(GPA_lm2)
+
+anova(GPA_lm, GPA_lm2)
+```
 
 
 ## Question 9: use example from wk 9 notes called "Example Cont. Regression Coefficients" to create a table showing differences in intercepts and coefficients between the 2 models created in Q5 and Q8
