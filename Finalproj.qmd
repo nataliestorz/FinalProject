@@ -226,6 +226,8 @@ anova(GPA_lm, GPA_lm2)
 
 
 
+
+
 ## Question 9: Create a formatted regression summary table to compare both models.
 
 Your table should:
