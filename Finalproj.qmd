@@ -4,6 +4,7 @@ author: "Natalie Storz, Jack Fredota, Wendy Muratas"
 format: html
 editor: visual
 embed-resources: TRUE
+theme: minty
 ---
 
 ## Load in the data/packages
