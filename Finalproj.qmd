@@ -1,24 +1,23 @@
 ---
 title: "Final Project"
+author: "Natalie Storz, Jack Fredota, Wendy Muratas"
 format: html
 editor: visual
 embed-resources: TRUE
 ---
 
-#Load in the data/packages
-
-```{r}
-ai_impact_data <- read.csv("AI_student_impact.csv")
-```
+## Load in the data/packages
 
 ```{r}
 library(tidyverse)
-library(purrr)
 library(knitr)
 library(kableExtra)
-library(ggplot2)
 library(broom)
 library(gt)
+```
+
+```{r}
+ai_impact_data <- read.csv("AI_student_impact.csv")
 ```
 
 # Dataset description:
@@ -107,7 +106,6 @@ The results suggest that higher weekly GenAI usage is most strongly associated w
 
 In contrast, AI usage had weak negative correlations with post-semester GPA, skill retention, and traditional study hours. This may suggest that heavier AI use is associated with spending less time using traditional study methods and slightly lower skill retention, although most of these relationships are fairly weak.
 
-
 ## Question 4: Use iteration to compute summary statistics across multiple numeric columns.
 
 Write a function called `numeric_summary` that takes a numeric vector and returns a named vector with the mean, median, and standard deviation. Then use `map()` to apply it to the following columns: `Weekly_GenAI_Hours`, `Traditional_Study_Hours`, `Pre_Semester_GPA`, `Post_Semester_GPA`, and `Skill_Retention_Score`.
@@ -127,8 +125,6 @@ numeric_cols <- clean_ai_impact |>
 
 map(numeric_cols, numeric_summary)
 ```
-
-
 
 # Significance Testing
 
@@ -159,14 +155,14 @@ You will neeed to create some graphs in order to show that these conditions are 
 ```{r}
 # Run the regression model we just defined and save it to the name "GPA_lm"
 GPA_lm <- lm(Post_Semester_GPA ~ Traditional_Study_Hours,
-             data = ai_impact_data)
+             data = clean_ai_impact)
 
 ```
 
 ```{r}
 # Check that the linearity condition is satisfied
 
-ai_impact_data |> 
+clean_ai_impact |> 
   ggplot(aes(x = Traditional_Study_Hours,
            y = Post_Semester_GPA)) +
   geom_point(alpha = 0.3) +
@@ -188,7 +184,7 @@ plot(GPA_lm, which = 2)
 
 ```
 
-Examining the QQ Plot we generated, we can see that while there is some deviation from perfect normality (especially near the tails), given our very large sample size and the fact that our response variable (GPA) is bounded, the normailty condition is reasonably satisfied for the purposes of our analysis.
+Examining the QQ Plot we generated, we can see that while there is some deviation from perfect normality (especially near the tails), given our very large sample size and the fact that our response variable (GPA) is bounded, the normality condition is reasonably satisfied for the purposes of our analysis.
 
 ```{r}
 # Check for equal variance
@@ -202,31 +198,30 @@ GPA_lm |>
 
 Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a fan shape to the residuals as opposed to the completely random cluster we hoped to get. They are also not fully clustered around 0 which we would expect to see if the condition was met. However, again, given the amount of observations in our data, and the fact that our response variable is bounded, we can still assume that this condition is satisfied so we can go ahead and use our model to approximate our targeted relationship.
 
-## Question 7: get summary of model
+## Question 7: Use the summary() function to produce a summary of the model from Question 6, including the coefficients, standard errors, p-values, and other relevant model statistics. Include a short conclusion about the output.
 
 ```{r}
 
 summary(GPA_lm)
 
 ```
-The model shows that Traditional_Study_Hours is a statistically significant predictor of Post_Semester_GPA (p < 0.001). For each hour of traditional study per week, GPA is estimated to increase by approximately [coefficient] points, with an intercept of [intercept]. The R^2 value of [value] suggests that traditional study hours alone explains only a small portion of the variation in GPA.
 
+The model shows that Traditional_Study_Hours is a statistically significant predictor of Post_Semester_GPA (p \< 0.001). For each hour of traditional study per week, GPA is estimated to increase by approximately 0.013 points, with an intercept of 3.2. The R\^2 value of .01895 suggests that traditional study hours alone explains only a small portion of the variation in GPA.
 
+## Question 8: Does including weekly AI usage as a predictor improve the model? Create a new model including the variable Weekly_GenAI_Hours and compare it to the model from question 6 using a Type 1 anova test.
 
-## Question 8: does some variable improve the model, or not
+::: callout-note
+You will need this for an interpretation later in the lab.
+:::
 
 ```{r}
 GPA_lm2 <- lm(Post_Semester_GPA ~ Traditional_Study_Hours + Weekly_GenAI_Hours,
-              data = ai_impact_data)
+              data = clean_ai_impact)
 
 summary(GPA_lm2)
 
 anova(GPA_lm, GPA_lm2)
 ```
-
-
-
-
 
 ## Question 9: Create a formatted regression summary table to compare both models.
 
@@ -247,7 +242,7 @@ Your table should:
 You will want to store both regression models inside a tibble and consider using a list-column to hold the model objects. Use map() together with broom::tidy() to extract regression coefficients from each model, and use unnest() to expand the coefficient results into rows. Use gt() or kableExtra() to create the final formatted table. View example from week 9 class slides for extra help.
 :::
 
-In addition to the table, briefly explain in 1-2 sentences what the results suggest about the predictors of post-semester GPA.
+In addition to the table, briefly explain in 1-2 sentences what the results suggest about the predictors of post-semester GPA. You may also reference the anova table from question 8 to help draw conclusions.
 
 ```{r}
 # Create a formatted regression table
@@ -260,31 +255,22 @@ tibble(
   mutate(term = fct_recode(
     .f = term,
     "Intercept" = "(Intercept)",
-    "Traditional Study Hours" = "traditional_study_hours",
-    "Weekly GenAI Usage" = "weekly_genai_usage"
-  )) |> 
+    "Traditional Study Hours" = "Traditional_Study_Hours",
+    "Weekly GenAI Hours" = "Weekly_GenAI_Hours"
+  )) |>
   select(-std.error, -statistic) |> 
   mutate(p.value = case_when(
     p.value < .001 ~ "<.001",
     TRUE ~ as.character(round(p.value, 3))
   )) |>
+  mutate(model = recode(model,       
+    "GPA_lm"  = "Model 1: Traditional Study Hours Only",
+    "GPA_lm2" = "Model 2: Traditional Study Hours + Weekly GenAI Usage"
+  )) |>
   gt(groupname_col = "model") |>
   fmt_number(
     estimate,
     decimals = 3
-  ) |>
-  tab_row_group(
-    label = md("**Model 2: Traditional Study Hours + Weekly GenAI Usage**"),
-    rows = model == "Model 2"
-  ) |>
-  tab_row_group(
-    label = md("**Model 1: Traditional Study Hours Only**"),
-    rows = model == "Model 1"
-  ) |>
-  cols_hide(model) |>
-  cols_align(
-    align = "left",
-    columns = term
   ) |>
   tab_style(
     style = cell_fill(color = "gray85"),
@@ -297,3 +283,11 @@ tibble(
   )
 ```
 
+The results indicate that Traditional Study Hours is a significant significant predictor of post-semester GPA, with each additional hour of traditional studying associated with an increase of approximately 0.013 GPA points (p \< .001). In contrast, Weekly GenAI Hours is not a significant predictor (p = .484) when added to the model already containing Traditional_Study_Hours, and the ANOVA comparison shows that adding GenAI usage to the model does not significantly improve model fit (F = 0.490, p = .484), suggesting that GenAI hours do not explain additional variation in GPA beyond traditional study time.
+
+## Sources:
+
+1.  Class Slides
+2.  Notes from Professor Schroth who teachers STAT 324 at Cal Poly
+3.  [How to Check Linear Regression Assumptions in R](https://www.statology.org/check-linear-regression-assumptions-in-r/)
+4.  [How to insert link to a markdown document (Claude)](https://claude.ai/share/da4e516e-234a-4f68-bba1-5bd9d8939bda).
