@@ -126,7 +126,7 @@ numeric_cols <- clean_ai_impact |>
 
 map(numeric_cols, numeric_summary)
 ```
-On average, students spend about [value] hours per week using GenAI and [value] hours studying traditionally. Pre and post semester GPAs were similar, and skill retention scores averaged around [value].
+On average, students spend about 8.428 hours per week using GenAI and 11.209 hours studying traditionally. Pre and post semester GPAs were similar, and skill retention scores averaged around 75.798.
  
 # Significance Testing
 
