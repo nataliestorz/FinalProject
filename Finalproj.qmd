@@ -4,6 +4,7 @@ author: "Natalie Storz, Jack Fredota, Wendy Muratas"
 format: html
 editor: visual
 embed-resources: TRUE
+theme: minty
 ---
 
 ## Load in the data/packages
@@ -125,10 +126,7 @@ numeric_cols <- clean_ai_impact |>
 
 map(numeric_cols, numeric_summary)
 ```
-
-The results show that students spend an average of [value] hours per week using GenAI and [value] hours studying traditionally. Pre and post semester GPAs were similar, averaging around [value] and [value]. Skill retention scores averaged around [value].
-
- 
+On average, students spend about [value] hours per week using GenAI and [value] hours studying traditionally. Pre and post semester GPAs were similar, and skill retention scores averaged around [value].
  
 # Significance Testing
 
