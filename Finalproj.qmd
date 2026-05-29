@@ -125,9 +125,10 @@ numeric_cols <- clean_ai_impact |>
 
 map(numeric_cols, numeric_summary)
 ```
-
 The results show that students spend an average of [value] hours per week using GenAI and [value] hours studying traditionally. Pre and post semester GPAs were similar, averaging around [value] and [value]. Skill retention scores averaged around [value].
 
+ 
+ 
 # Significance Testing
 
 Now that we have a good idea of the students in our dataset, and how much they are using generative AI, let's now test its significance on students' respective GPAs by running simple linear regressions
