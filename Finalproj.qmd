@@ -1,15 +1,18 @@
 ---
 title: "Final Project"
+author: "Natalie Storz, Jack Fredota, Wendy Muratas"
 format: html
 editor: visual
 embed-resources: TRUE
+theme: minty
 ---
 
-#Load in the data/packages
+## Load in the data/packages
 
 ```{r}
 ai_impact_data <- read.csv("AI_student_impact.csv")
 ```
+
 
 ```{r}
 library(tidyverse)
@@ -22,9 +25,10 @@ library(broom)
 
 # Dataset description:
 
-This dataset includes sixteen columns and 50000 rows. Each row represents an individual student, shown by their student ID number. The columns include information describing student interactions with AI, spanning academic outcomes, behavioral patterns, institutional context, and psychological well-being. Students are categorized by their major, year of study, pre and post-semester GPA, hours studying with and without use of AI, whether or not they have a paid subscription, their perceived dependency on AI, anxiety level during exams, and burnout risk.
+The AI Impact on Students dataset contains information on student AI usage habits and academic outcomes, with each row representing a unique student identified by Student_ID. It includes demographic and academic variables such as Major_Category, Year_of_Study, and GPA both before (Pre_Semester_GPA) and after (Post_Semester_GPA) the semester. Several variables capture AI usage behavior, including Weekly_GenAI_Hours, Primary_Use_Case, Prompt_Engineering_Skill, and Tool_Diversity, while Institutional_Policy reflects the student's school-level context. Finally, the dataset includes student wellbeing and outcome measures such as Anxiety_Level_During_Exams, Skill_Retention_Score, Perceived_AI_Dependency, and Burnout_Risk_Level, making it well-suited for exploring how generative AI usage relates to student performance and wellbeing.This dataset includes sixteen columns and 50000 rows. 
 
-Data dictionary: [Download the Data Dictionary](AI_Impact_Students_Data_Dictionary.docx)
+Data dictionary:
+<iframe src="AI_Impact_Students_Data_Dictionary.pdf" width="100%" height="600px"></iframe>
 
 ## Question 1: Clean Data
 
@@ -69,13 +73,19 @@ clean_ai_impact |>
 
 Create a character vector called student_outcomes containing the following variables:
 
-"Post_Semester_GPA" "Skill_Retention_Score" "Anxiety_Level_During_Exams" "Traditional_Study_Hours" "Perceived_AI_Dependency"
+`Post_Semester_GPA`, `Skill_Retention_Score` `Anxiety_Level_During_Exams`, `Traditional_Study_Hours`, `Perceived_AI_Dependency`
 
 Calculate the correlation between Weekly_GenAI_Hours and each outcome variable, and store your results in a tibble with nice formatting and titles.
+
+::: callout-tip
+Use the function map_dbl() in your code!
+:::
 
 Describe the results in 2-3 sentences.
 
 ```{r}
+# Code for Question 3
+
 student_outcomes <- c(
   "Post_Semester_GPA",
   "Skill_Retention_Score",
@@ -99,11 +109,12 @@ cor_table <- tibble(
 cor_table
 ```
 
-The results suggest that higher weekly GenAI usage is most strongly associated with greater perceived AI dependency, with a relatively strong positive correlation of 0.67. Students who reported using AI more frequently also tended to report slightly higher anxiety during exams.
+The results suggest that higher `Weekly_GenAI_Hours` usage is most strongly associated with greater `Perceived_AI_Dependency`, with a relatively strong positive correlation of 0.67. Students who reported using AI more frequently also tended to report slightly higher anxiety during exams.
 
 In contrast, AI usage had weak negative correlations with post-semester GPA, skill retention, and traditional study hours. This may suggest that heavier AI use is associated with spending less time using traditional study methods and slightly lower skill retention, although most of these relationships are fairly weak.
 
-## Question 4: Compute Summary Statistics
+
+## Question 4: Use iteration to compute summary statistics across multiple numeric columns.
 
 Write a function called `numeric_summary` that takes a numeric vector and returns a named vector with the mean, median, and standard deviation. Then use `map()` to apply it to the following columns: `Weekly_GenAI_Hours`, `Traditional_Study_Hours`, `Pre_Semester_GPA`, `Post_Semester_GPA`, and `Skill_Retention_Score`.
 
@@ -122,6 +133,8 @@ numeric_cols <- clean_ai_impact |>
 
 map(numeric_cols, numeric_summary)
 ```
+
+On average, students spend about 8.428 hours per week using GenAI and 11.209 hours studying traditionally. Pre and post semester GPAs were similar, and skill retention scores averaged around 75.798.
 
 # Significance Testing
 
@@ -159,7 +172,6 @@ clean_ai_impact <- clean_ai_impact |>
          Major_Category == "Business")
 GPA_lm <- lm(Skill_Retention_Score ~ Traditional_Study_Hours,
              data = clean_ai_impact)
-
 ```
 
 
@@ -198,6 +210,7 @@ GPA_lm |>
 
 Examining the residual distribution and the overlaying density curve we generated, we can comfortably say this condition is satisfied as well. Due to the distribution being unimodal, centered around 0, and showing no serious strong signs of skewness, the condition will be passed. 
 
+
 ```{r}
 # Check for equal variance
 GPA_lm |> 
@@ -210,10 +223,100 @@ GPA_lm |>
 
 Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a wedge shape to the residuals as we get closer and closer to scores of 100 due to it being the cap. However, given the fact that the residuals are mostly centered around 0 and show not clear and obvious curves or patterns, we can move forward catiously and say that the condition is satisfied in order to continue our analysis and try to find some evidence of an association between our variables. 
 
-## Question 7: get summary of model
+## Question 7: Use the summary() function to produce a summary of the model from Question 6, including the coefficients, standard errors, p-values, and other relevant model statistics. Include a short conclusion about the output.
 
 
-## Question 8: does some variable improve the model, or not
+```{r}
+
+summary(GPA_lm)
+
+```
+
+The model shows that Traditional_Study_Hours is a statistically significant predictor of Post_Semester_GPA (p \< 0.001). For each hour of traditional study per week, GPA is estimated to increase by approximately 0.013 points, with an intercept of 3.2. The R\^2 value of .01895 suggests that traditional study hours alone explains only a small portion of the variation in GPA.
+
+## Question 8: Does including weekly AI usage as a predictor improve the model? Create a new model including the variable Weekly_GenAI_Hours and compare it to the model from question 6 using a Type 1 anova test.
+
+::: callout-note
+You will need this for an interpretation later in the lab.
+:::
 
 
 ## Question 9: use example from wk 9 notes called "Example Cont. Regression Coefficients" to create a table showing differences in intercepts and coefficients between the 2 models created in Q5 and Q8
+
+```{r}
+GPA_lm2 <- lm(Post_Semester_GPA ~ Traditional_Study_Hours + Weekly_GenAI_Hours,
+              data = clean_ai_impact)
+
+summary(GPA_lm2)
+
+anova(GPA_lm, GPA_lm2)
+```
+
+## Question 9: Create a formatted regression summary table to compare both models.
+
+Your table should:
+
+-   display the regression coefficients for each model
+-   include:
+    -   intercept estimates
+    -   coefficient estimates
+    -   p-values
+-   clearly separate the results for each model using grouped row labels
+-   rename coefficient terms so they are reader-friendly
+-   round coefficient estimates to 3 decimal places
+-   display very small p-values as \<.001
+-   hide unnecessary regression output columns
+
+::: callout-tip
+You will want to store both regression models inside a tibble and consider using a list-column to hold the model objects. Use map() together with broom::tidy() to extract regression coefficients from each model, and use unnest() to expand the coefficient results into rows. Use gt() or kableExtra() to create the final formatted table. View example from week 9 class slides for extra help.
+:::
+
+In addition to the table, briefly explain in 1-2 sentences what the results suggest about the predictors of post-semester GPA. You may also reference the anova table from question 8 to help draw conclusions.
+
+```{r}
+# Create a formatted regression table
+tibble(
+  model = c("GPA_lm", "GPA_lm2"),
+  fit = list(GPA_lm, GPA_lm2)) |> 
+  mutate(coefs = map(fit, ~ broom::tidy(.x))) |> 
+  select(model, coefs) |> 
+  unnest(cols = coefs) |> 
+  mutate(term = fct_recode(
+    .f = term,
+    "Intercept" = "(Intercept)",
+    "Traditional Study Hours" = "Traditional_Study_Hours",
+    "Weekly GenAI Hours" = "Weekly_GenAI_Hours"
+  )) |>
+  select(-std.error, -statistic) |> 
+  mutate(p.value = case_when(
+    p.value < .001 ~ "<.001",
+    TRUE ~ as.character(round(p.value, 3))
+  )) |>
+  mutate(model = recode(model,       
+    "GPA_lm"  = "Model 1: Traditional Study Hours Only",
+    "GPA_lm2" = "Model 2: Traditional Study Hours + Weekly GenAI Usage"
+  )) |>
+  gt(groupname_col = "model") |>
+  fmt_number(
+    estimate,
+    decimals = 3
+  ) |>
+  tab_style(
+    style = cell_fill(color = "gray85"),
+    locations = cells_row_groups()
+  ) |>
+  cols_label(
+    term = md("**Model & Term**"),
+    estimate = md("**Est. Coef.**"),
+    p.value = md("**p-value**")
+  )
+```
+
+The results indicate that Traditional Study Hours is a significant significant predictor of post-semester GPA, with each additional hour of traditional studying associated with an increase of approximately 0.013 GPA points (p \< .001). In contrast, Weekly GenAI Hours is not a significant predictor (p = .484) when added to the model already containing Traditional_Study_Hours, and the ANOVA comparison shows that adding GenAI usage to the model does not significantly improve model fit (F = 0.490, p = .484), suggesting that GenAI hours do not explain additional variation in GPA beyond traditional study time.
+
+## Sources:
+
+1.  Class Slides
+2.  Notes from Professor Schroth who teachers STAT 324 at Cal Poly
+3.  [How to Check Linear Regression Assumptions in R](https://www.statology.org/check-linear-regression-assumptions-in-r/)
+4.  [How to insert link to a markdown document (Claude)](https://claude.ai/share/da4e516e-234a-4f68-bba1-5bd9d8939bda).
