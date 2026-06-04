@@ -25,7 +25,8 @@ ai_impact_data <- read.csv("AI_student_impact.csv")
 
 The AI Impact on Students dataset contains information on student AI usage habits and academic outcomes, with each row representing a unique student identified by Student_ID. It includes demographic and academic variables such as Major_Category, Year_of_Study, and GPA both before (Pre_Semester_GPA) and after (Post_Semester_GPA) the semester. Several variables capture AI usage behavior, including Weekly_GenAI_Hours, Primary_Use_Case, Prompt_Engineering_Skill, and Tool_Diversity, while Institutional_Policy reflects the student's school-level context. Finally, the dataset includes student wellbeing and outcome measures such as Anxiety_Level_During_Exams, Skill_Retention_Score, Perceived_AI_Dependency, and Burnout_Risk_Level, making it well-suited for exploring how generative AI usage relates to student performance and wellbeing.This dataset includes sixteen columns and 50000 rows. 
 
-Data dictionary: [Download the Data Dictionary](AI_Impact_Students_Data_Dictionary.docx)
+Data dictionary:
+<iframe src="AI_Impact_Students_Data_Dictionary.pdf" width="100%" height="600px"></iframe>
 
 ## Question 1: Clean Data
 
@@ -84,6 +85,8 @@ Use the function map_dbl() in your code!
 Describe the results in 2-3 sentences.
 
 ```{r}
+# Code for Question 3
+
 student_outcomes <- c(
   "Post_Semester_GPA",
   "Skill_Retention_Score",
