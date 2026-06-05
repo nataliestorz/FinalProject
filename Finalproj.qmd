@@ -10,6 +10,10 @@ theme: minty
 ## Load in the data/packages
 
 ```{r}
+ai_impact_data <- read.csv("AI_student_impact.csv")
+```
+
+```{r}
 library(tidyverse)
 library(knitr)
 library(kableExtra)
@@ -23,9 +27,10 @@ ai_impact_data <- read.csv("AI_student_impact.csv")
 
 # Dataset description:
 
-This dataset includes sixteen columns and 50000 rows. Each row represents an individual student, shown by their student ID number. The columns include information describing student interactions with AI, spanning academic outcomes, behavioral patterns, institutional context, and psychological well-being. Students are categorized by their major, year of study, pre and post-semester GPA, hours studying with and without use of AI, whether or not they have a paid subscription, their perceived dependency on AI, anxiety level during exams, and burnout risk.
+The AI Impact on Students dataset contains information on student AI usage habits and academic outcomes, with each row representing a unique student identified by Student_ID. It includes demographic and academic variables such as Major_Category, Year_of_Study, and GPA both before (Pre_Semester_GPA) and after (Post_Semester_GPA) the semester. Several variables capture AI usage behavior, including Weekly_GenAI_Hours, Primary_Use_Case, Prompt_Engineering_Skill, and Tool_Diversity, while Institutional_Policy reflects the student's school-level context. Finally, the dataset includes student wellbeing and outcome measures such as Anxiety_Level_During_Exams, Skill_Retention_Score, Perceived_AI_Dependency, and Burnout_Risk_Level, making it well-suited for exploring how generative AI usage relates to student performance and wellbeing.This dataset includes sixteen columns and 50000 rows.
 
-Data dictionary: [Download the Data Dictionary](AI_Impact_Students_Data_Dictionary.docx)
+Data dictionary: <iframe src="AI_Impact_Students_Data_Dictionary.pdf" width="100%" height="600px"></iframe>
+
 
 ## Question 1: Clean Data
 
@@ -133,13 +138,15 @@ On average, students spend about \[value\] hours per week using GenAI and \[valu
 
 Now that we have a good idea of the students in our dataset, and how much they are using generative AI, let's now test its significance on students' respective GPAs by running simple linear regressions
 
-## Question 5: We now want to test the impact that Generative AI use has had on students' GPAs. Let's begin by running a simple regression with post-semester GPA as the response variable, and traditional study hours (no AI use) as our explanatory variable. (No need for any code, just write in the document.)
+## Question 5: We now want to test the impact that Generative AI use has had on students' GPAs. Let's begin by using LaTeX do write out our population and sample regression equations with skill retention score (recorded post-semester and scored 1-100) as the response variable, and traditional study hours (no AI use) as our explanatory variable. (No need for any code, just write in the document.)
 
 ::: callout-tip
 You may want to look at specific LaTeX notation when writing these in your quarto document!
 :::
 
-y = post-semester GPA x = traditional study hours
+
+y = skill retention score x = traditional study hours
+
 
 population equation:
 
@@ -149,15 +156,15 @@ sample equation:
 
 $\widehat{GPA} = \hat{\beta}_0 + \hat{\beta}_1 (numhours)$
 
-## Question 6: Before we run our regression, let's check that all the L.I.N.E. conditions are met first.
+## Question 6: Since our data is so large, we will need to first subset the data and narrow down our analysis. Filter the data and resave it to "clean_ai_impact" so that it only keeps business majors who reported between 6 and 35 hours of traditional study hours. Additionally, remove all students who reported a Skill Retention Score of 100. Now let's fit our model we just specified and save it to the name "retention_lm", so we can check that all the L.I.N.E. conditions are met.
 
 ::: callout-note
-You will neeed to create some graphs in order to show that these conditions are satisfied
-:::
+You will need to create some graphs (not base R) in order to show that these conditions are satisfied
+
 
 ```{r}
-# Run the regression model we just defined and save it to the name "GPA_lm"
-GPA_lm <- lm(Post_Semester_GPA ~ Traditional_Study_Hours,
+# Run the regression model we just defined and save it to the name "retention_lm"
+retention_lm <- lm(Skill_Retention_Score ~ Traditional_Study_Hours,
              data = clean_ai_impact)
 
 ```
@@ -167,7 +174,7 @@ GPA_lm <- lm(Post_Semester_GPA ~ Traditional_Study_Hours,
 
 clean_ai_impact |> 
   ggplot(aes(x = Traditional_Study_Hours,
-           y = Post_Semester_GPA)) +
+           y = Skill_Retention_Score)) +
   geom_point(alpha = 0.3) +
   geom_smooth(method = "lm", se = FALSE)+
   labs(x = "Number of hours studied weekly without AI Use",
@@ -175,7 +182,8 @@ clean_ai_impact |>
 
 ```
 
-Although there is a large cluster of points due to number of observations in our data, we still see pretty clear positive linear relationship between study hours and student GPA. We can pretty safely say that the linearity condition is satisfied.
+Although there is a large cluster of points due to number of observations in our data, we still see pretty clear positive linear relationship between study hours and student skill retention score. We can pretty safely say that the linearity condition is satisfied.
+
 
 ::: callout-note
 Since every observation in the data represents a different student and the data is cross-sectional (not time series) the independence assumption is considered to be satisfied
@@ -183,15 +191,16 @@ Since every observation in the data represents a different student and the data 
 
 ```{r}
 # Check that the normality condition is met
-plot(GPA_lm, which = 2)
+plot(retention_lm, which = 2)
 
 ```
 
-Examining the QQ Plot we generated, we can see that while there is some deviation from perfect normality (especially near the tails), given our very large sample size and the fact that our response variable (GPA) is bounded, the normality condition is reasonably satisfied for the purposes of our analysis.
+Examining the residual distribution and the overlaying density curve we generated, we can comfortably say this condition is satisfied as well. Due to the distribution being unimodal, centered around 0, and showing no serious strong signs of skewness, the condition will be passed.
+
 
 ```{r}
 # Check for equal variance
-GPA_lm |> 
+retention_lm |> 
   augment() |> 
   ggplot(aes(x = .fitted, y = .resid)) +
   geom_point() +
@@ -199,7 +208,8 @@ GPA_lm |>
              color = "red", lwd = 1.5)
 ```
 
-Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a fan shape to the residuals as opposed to the completely random cluster we hoped to get. They are also not fully clustered around 0 which we would expect to see if the condition was met. However, again, given the amount of observations in our data, and the fact that our response variable is bounded, we can still assume that this condition is satisfied so we can go ahead and use our model to approximate our targeted relationship.
+Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a wedge shape to the residuals as we get closer and closer to scores of 100 due to it being the cap. However, given the fact that the residuals are mostly centered around 0 and show not clear and obvious curves or patterns, we can move forward cautiously and say that the condition is satisfied in order to continue our analysis and try to find some evidence of an association between our variables.
+
 
 ## Question 7: Use the summary() function to produce a summary of the model from Question 6, including the coefficients, standard errors, p-values, and other relevant model statistics. Include a short conclusion about the output.
 
@@ -252,8 +262,8 @@ In addition to the table, briefly explain in 1-2 sentences what the results sugg
 ```{r}
 # Create a formatted regression table
 tibble(
-  model = c("GPA_lm", "GPA_lm2"),
-  fit = list(GPA_lm, GPA_lm2)) |> 
+  model = c("retention_lm", "retention_lm2"),
+  fit = list(retention_lm, retention_lm2)) |> 
   mutate(coefs = map(fit, ~ broom::tidy(.x))) |> 
   select(model, coefs) |> 
   unnest(cols = coefs) |> 
@@ -269,8 +279,8 @@ tibble(
     TRUE ~ as.character(round(p.value, 3))
   )) |>
   mutate(model = recode(model,       
-    "GPA_lm"  = "Model 1: Traditional Study Hours Only",
-    "GPA_lm2" = "Model 2: Traditional Study Hours + Weekly GenAI Usage"
+    "retention_lm"  = "Model 1: Traditional Study Hours Only",
+    "retention_lm2" = "Model 2: Traditional Study Hours + Weekly GenAI Usage"
   )) |>
   gt(groupname_col = "model") |>
   fmt_number(
@@ -288,7 +298,7 @@ tibble(
   )
 ```
 
-The results indicate that Traditional Study Hours is a significant significant predictor of post-semester GPA, with each additional hour of traditional studying associated with an increase of approximately 0.013 GPA points (p \< .001). In contrast, Weekly GenAI Hours is not a significant predictor (p = .484) when added to the model already containing Traditional_Study_Hours, and the ANOVA comparison shows that adding GenAI usage to the model does not significantly improve model fit (F = 0.490, p = .484), suggesting that GenAI hours do not explain additional variation in GPA beyond traditional study time.
+The results indicate that Traditional Study Hours is a significant predictor of Skill Retention Score, with each additional hour of traditional studying associated with an increase of approximately 0.341 retention points (p < .001). Weekly GenAI Hours is also a significant predictor (p < .001), with each additional hour of GenAI use associated with a decrease of approximately 0.156 retention points after controlling for traditional study hours. The ANOVA comparison shows that adding GenAI usage significantly improves model fit (F = 476.25, p < .001), indicating that GenAI hours explain additional variation in skill retention beyond traditional study time. However, the overall explanatory power of the model remains modest (R² = .031), suggesting that most variation in skill retention is explained by factors not included in the model.
 
 ## Sources:
 
