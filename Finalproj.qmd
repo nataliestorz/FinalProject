@@ -31,7 +31,6 @@ The AI Impact on Students dataset contains information on student AI usage habit
 
 Data dictionary: <iframe src="AI_Impact_Students_Data_Dictionary.pdf" width="100%" height="600px"></iframe>
 
-
 ## Question 1: Clean Data
 
 Before analyzing the dataset, we need to ensure each variable has an appropriate data type.
@@ -144,9 +143,7 @@ Now that we have a good idea of the students in our dataset, and how much they a
 You may want to look at specific LaTeX notation when writing these in your quarto document!
 :::
 
-
 y = skill retention score x = traditional study hours
-
 
 population equation:
 
@@ -158,9 +155,8 @@ $\widehat{GPA} = \hat{\beta}_0 + \hat{\beta}_1 (numhours)$
 
 ## Question 6: Since our data is so large, we will need to first subset the data and narrow down our analysis. Filter the data and resave it to "clean_ai_impact" so that it only keeps business majors who reported between 6 and 35 hours of traditional study hours. Additionally, remove all students who reported a Skill Retention Score of 100. Now let's fit our model we just specified and save it to the name "retention_lm", so we can check that all the L.I.N.E. conditions are met.
 
-::: callout-note
+:::::: callout-note
 You will need to create some graphs (not base R) in order to show that these conditions are satisfied
-
 
 ```{r}
 # Run the regression model we just defined and save it to the name "retention_lm"
@@ -184,7 +180,6 @@ clean_ai_impact |>
 
 Although there is a large cluster of points due to number of observations in our data, we still see pretty clear positive linear relationship between study hours and student skill retention score. We can pretty safely say that the linearity condition is satisfied.
 
-
 ::: callout-note
 Since every observation in the data represents a different student and the data is cross-sectional (not time series) the independence assumption is considered to be satisfied
 :::
@@ -197,7 +192,6 @@ plot(retention_lm, which = 2)
 
 Examining the residual distribution and the overlaying density curve we generated, we can comfortably say this condition is satisfied as well. Due to the distribution being unimodal, centered around 0, and showing no serious strong signs of skewness, the condition will be passed.
 
-
 ```{r}
 # Check for equal variance
 retention_lm |> 
@@ -209,7 +203,6 @@ retention_lm |>
 ```
 
 Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a wedge shape to the residuals as we get closer and closer to scores of 100 due to it being the cap. However, given the fact that the residuals are mostly centered around 0 and show not clear and obvious curves or patterns, we can move forward cautiously and say that the condition is satisfied in order to continue our analysis and try to find some evidence of an association between our variables.
-
 
 ## Question 7: Use the summary() function to produce a summary of the model from Question 6, including the coefficients, standard errors, p-values, and other relevant model statistics. Include a short conclusion about the output.
 
@@ -237,6 +230,8 @@ anova(retention_lm, retention_lm2)
 ```
 
 When Weekly_GenAI_Hour is added to the model, it is a statistically significant predictor of Skill_Retnetion_Score (p \< .001), with each additional hour of weekly GenAI use associated with a decrease of approximately 0.156 points in skill retention. The ANOVA comparison confirms that adding  Weekly_GenAI_Hour significantly improves model fit (F = 476.25, p \< .001), suggesting that weekly AI usage does explain additional variation in skill retention beyond traditional study hours alone. However, the R2 only increases from 0.022 to 0.031, meaning both models still explain very little of the overall variation in skill retention scores.
+
+**\*Referenced Source 5**\*
 
 ## Question 9: Create a formatted regression summary table to compare both models.
 
@@ -298,7 +293,7 @@ tibble(
   )
 ```
 
-The results indicate that Traditional Study Hours is a significant predictor of Skill Retention Score, with each additional hour of traditional studying associated with an increase of approximately 0.341 retention points (p < .001). Weekly GenAI Hours is also a significant predictor (p < .001), with each additional hour of GenAI use associated with a decrease of approximately 0.156 retention points after controlling for traditional study hours. The ANOVA comparison shows that adding GenAI usage significantly improves model fit (F = 476.25, p < .001), indicating that GenAI hours explain additional variation in skill retention beyond traditional study time. However, the overall explanatory power of the model remains modest (R² = .031), suggesting that most variation in skill retention is explained by factors not included in the model.
+The results indicate that Traditional Study Hours is a significant predictor of Skill Retention Score, with each additional hour of traditional studying associated with an increase of approximately 0.341 retention points (p \< .001). Weekly GenAI Hours is also a significant predictor (p \< .001), with each additional hour of GenAI use associated with a decrease of approximately 0.156 retention points after controlling for traditional study hours. The ANOVA comparison shows that adding GenAI usage significantly improves model fit (F = 476.25, p \< .001), indicating that GenAI hours explain additional variation in skill retention beyond traditional study time. However, the overall explanatory power of the model remains modest (R² = .031), suggesting that most variation in skill retention is explained by factors not included in the model.
 
 ## Sources:
 
@@ -311,5 +306,4 @@ The results indicate that Traditional Study Hours is a significant predictor of 
 4.  [How to insert link to a markdown document (Claude](https://claude.ai/share/da4e516e-234a-4f68-bba1-5bd9d8939bda)
 
 5.  [Comparing Regression Models with anova - YaRr](https://bookdown.org/ndphillips/YaRrr/comparing-regression-models-with-anova.html)
-
-6.  
+::::::
