@@ -205,7 +205,7 @@ Using the fitted residuals plot here, we can see some issues with the equal vari
 
 ```{r}
 
-summary(GPA_lm)
+summary(retention_lm)
 
 ```
 
