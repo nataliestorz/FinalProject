@@ -15,11 +15,14 @@ ai_impact_data <- read.csv("AI_student_impact.csv")
 
 ```{r}
 library(tidyverse)
-library(purrr)
 library(knitr)
 library(kableExtra)
-library(ggplot2)
 library(broom)
+library(gt)
+```
+
+```{r}
+ai_impact_data <- read.csv("AI_student_impact.csv")
 ```
 
 # Dataset description:
@@ -27,6 +30,7 @@ library(broom)
 The AI Impact on Students dataset contains information on student AI usage habits and academic outcomes, with each row representing a unique student identified by Student_ID. It includes demographic and academic variables such as Major_Category, Year_of_Study, and GPA both before (Pre_Semester_GPA) and after (Post_Semester_GPA) the semester. Several variables capture AI usage behavior, including Weekly_GenAI_Hours, Primary_Use_Case, Prompt_Engineering_Skill, and Tool_Diversity, while Institutional_Policy reflects the student's school-level context. Finally, the dataset includes student wellbeing and outcome measures such as Anxiety_Level_During_Exams, Skill_Retention_Score, Perceived_AI_Dependency, and Burnout_Risk_Level, making it well-suited for exploring how generative AI usage relates to student performance and wellbeing.This dataset includes sixteen columns and 50000 rows.
 
 Data dictionary: <iframe src="AI_Impact_Students_Data_Dictionary.pdf" width="100%" height="600px"></iframe>
+
 
 ## Question 1: Clean Data
 
@@ -53,17 +57,20 @@ Before studying student outcomes, let’s first understand how students are usin
 
 ## Question 2: Visualize
 
-Visualize and compare the distribution of weekly generative AI use across major categories using an appropriate plot
+Visualize the relationship between students' majors (by category) and average weekly use of generative AI (in hours) using ggplot and a relevant graph/chart.
 
 ```{r}
 # Code for question 2
-clean_ai_impact |>
-  ggplot(aes(x = Weekly_GenAI_Hours,
-             y = reorder(Major_Category, Weekly_GenAI_Hours, median))) +
-  geom_boxplot(outlier.shape = NA) +
-  labs(x = "Weekly Generative AI Use (Hours)",
-       y = "Major Category",
-       title = "Weekly Generative AI Use by Major Category")
+clean_ai_impact |> 
+  group_by(Major_Category) |> 
+  summarize(mean_hours = mean(Weekly_GenAI_Hours)) |> 
+  ggplot(aes(x = mean_hours,
+             y = Major_Category,
+             fill = Major_Category)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Average Weekly Hours",
+       y = "",
+       subtitle = "Average Hours of AI Use Weekly by Major Category")
 
 ```
 
@@ -71,19 +78,13 @@ clean_ai_impact |>
 
 Create a character vector called student_outcomes containing the following variables:
 
-`Post_Semester_GPA`, `Skill_Retention_Score` `Anxiety_Level_During_Exams`, `Traditional_Study_Hours`, `Perceived_AI_Dependency`
+"Post_Semester_GPA" "Skill_Retention_Score" "Anxiety_Level_During_Exams" "Traditional_Study_Hours" "Perceived_AI_Dependency"
 
 Calculate the correlation between Weekly_GenAI_Hours and each outcome variable, and store your results in a tibble with nice formatting and titles.
-
-::: callout-tip
-Use the function map_dbl() in your code!
-:::
 
 Describe the results in 2-3 sentences.
 
 ```{r}
-# Code for Question 3
-
 student_outcomes <- c(
   "Post_Semester_GPA",
   "Skill_Retention_Score",
@@ -107,7 +108,7 @@ cor_table <- tibble(
 cor_table
 ```
 
-The results suggest that higher `Weekly_GenAI_Hours` usage is most strongly associated with greater `Perceived_AI_Dependency`, with a relatively strong positive correlation of 0.67. Students who reported using AI more frequently also tended to report slightly higher anxiety during exams.
+The results suggest that higher weekly GenAI usage is most strongly associated with greater perceived AI dependency, with a relatively strong positive correlation of 0.67. Students who reported using AI more frequently also tended to report slightly higher anxiety during exams.
 
 In contrast, AI usage had weak negative correlations with post-semester GPA, skill retention, and traditional study hours. This may suggest that heavier AI use is associated with spending less time using traditional study methods and slightly lower skill retention, although most of these relationships are fairly weak.
 
@@ -131,7 +132,7 @@ numeric_cols <- clean_ai_impact |>
 map(numeric_cols, numeric_summary)
 ```
 
-On average, students spend about 8.428 hours per week using GenAI and 11.209 hours studying traditionally. Pre and post semester GPAs were similar, and skill retention scores averaged around 75.798.
+On average, students spend about \[value\] hours per week using GenAI and \[value\] hours studying traditionally. Pre and post semester GPAs were similar, and skill retention scores averaged around \[value\].
 
 # Significance Testing
 
@@ -143,30 +144,29 @@ Now that we have a good idea of the students in our dataset, and how much they a
 You may want to look at specific LaTeX notation when writing these in your quarto document!
 :::
 
+
 y = skill retention score x = traditional study hours
+
 
 population equation:
 
-$score = \beta_0 + \beta_1 (numhours) + \varepsilon_i$
+$GPA = \beta_0 + \beta_1 (num_hours) + \varepsilon_i$
 
 sample equation:
 
-$\widehat{score} = \hat{\beta}_0 + \hat{\beta}_1 (numhours)$
+$\widehat{GPA} = \hat{\beta}_0 + \hat{\beta}_1 (numhours)$
 
 ## Question 6: Since our data is so large, we will need to first subset the data and narrow down our analysis. Filter the data and resave it to "clean_ai_impact" so that it only keeps business majors who reported between 6 and 35 hours of traditional study hours. Additionally, remove all students who reported a Skill Retention Score of 100. Now let's fit our model we just specified and save it to the name "GPA_lm", so we can check that all the L.I.N.E. conditions are met.
 
 ::: callout-note
 You will need to create some graphs (not base R) in order to show that these conditions are satisfied
-:::
+
 
 ```{r}
 # Run the regression model we just defined and save it to the name "GPA_lm"
-clean_ai_impact <- clean_ai_impact |> 
-  filter(Traditional_Study_Hours > 5 & Traditional_Study_Hours <= 35,
-         Skill_Retention_Score <= 100,
-         Major_Category == "Business")
-GPA_lm <- lm(Skill_Retention_Score ~ Traditional_Study_Hours,
+GPA_lm <- lm(Post_Semester_GPA ~ Traditional_Study_Hours,
              data = clean_ai_impact)
+
 ```
 
 ```{r}
@@ -174,13 +174,16 @@ GPA_lm <- lm(Skill_Retention_Score ~ Traditional_Study_Hours,
 
 clean_ai_impact |> 
   ggplot(aes(x = Traditional_Study_Hours,
-             y = Skill_Retention_Score)) +
-  geom_point() +
-  geom_smooth(method = lm) 
+           y = Post_Semester_GPA)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(x = "Number of hours studied weekly without AI Use",
+       y = "Student GPA")
 
 ```
 
 Although there is a large cluster of points due to number of observations in our data, we still see pretty clear positive linear relationship between study hours and student skill retention score. We can pretty safely say that the linearity condition is satisfied.
+
 
 ::: callout-note
 Since every observation in the data represents a different student and the data is cross-sectional (not time series) the independence assumption is considered to be satisfied
@@ -188,20 +191,12 @@ Since every observation in the data represents a different student and the data 
 
 ```{r}
 # Check that the normality condition is met
-resid_sd <- sd(GPA_lm$residuals)
+plot(GPA_lm, which = 2)
 
-GPA_lm |> 
-  broom::augment() |> 
-  ggplot(aes(x = .resid)) +
-  geom_histogram(aes(y = after_stat(density)),
-                 bins = 30) +
-  stat_function(fun = ~ dnorm(.x, mean = 0, sd = resid_sd),
-                color = "steelblue", lwd = 1.5) +
-  xlab("Residuals") +
-  theme(aspect.ratio = 1)
 ```
 
 Examining the residual distribution and the overlaying density curve we generated, we can comfortably say this condition is satisfied as well. Due to the distribution being unimodal, centered around 0, and showing no serious strong signs of skewness, the condition will be passed.
+
 
 ```{r}
 # Check for equal variance
@@ -213,13 +208,14 @@ GPA_lm |>
              color = "red", lwd = 1.5)
 ```
 
-Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a wedge shape to the residuals as we get closer and closer to scores of 100 due to it being the cap. However, given the fact that the residuals are mostly centered around 0 and show not clear and obvious curves or patterns, we can move forward catiously and say that the condition is satisfied in order to continue our analysis and try to find some evidence of an association between our variables.
+Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a wedge shape to the residuals as we get closer and closer to scores of 100 due to it being the cap. However, given the fact that the residuals are mostly centered around 0 and show not clear and obvious curves or patterns, we can move forward cautiously and say that the condition is satisfied in order to continue our analysis and try to find some evidence of an association between our variables.
+
 
 ## Question 7: Use the summary() function to produce a summary of the model from Question 6, including the coefficients, standard errors, p-values, and other relevant model statistics. Include a short conclusion about the output.
 
 ```{r}
 
-summary(GPA_lm)
+summary(retention_lm)
 
 ```
 
@@ -231,16 +227,16 @@ The model shows that Traditional_Study_Hours is a statistically significant pred
 You will need this for an interpretation later in the lab.
 :::
 
-## Question 8: use example from wk 9 notes called "Example Cont. Regression Coefficients" to create a table showing differences in intercepts and coefficients between the 2 models created in Q5 and Q8
-
 ```{r}
-GPA_lm2 <- lm(Post_Semester_GPA ~ Traditional_Study_Hours + Weekly_GenAI_Hours,
-              data = clean_ai_impact)
+retention_lm2 <- lm(Skill_Retention_Score ~ Traditional_Study_Hours + Weekly_GenAI_Hours,
+                    data = clean_ai_impact)
 
-summary(GPA_lm2)
+summary(retention_lm2)
 
-anova(GPA_lm, GPA_lm2)
+anova(retention_lm, retention_lm2)
 ```
+
+When Weekly_GenAI_Hour is added to the model, it is a statistically significant predictor of Skill_Retnetion_Score (p \< .001), with each additional hour of weekly GenAI use associated with a decrease of approximately 0.156 points in skill retention. The ANOVA comparison confirms that adding  Weekly_GenAI_Hour significantly improves model fit (F = 476.25, p \< .001), suggesting that weekly AI usage does explain additional variation in skill retention beyond traditional study hours alone. However, the R2 only increases from 0.022 to 0.031, meaning both models still explain very little of the overall variation in skill retention scores.
 
 ## Question 9: Create a formatted regression summary table to compare both models.
 
@@ -307,6 +303,11 @@ The results indicate that Traditional Study Hours is a significant significant p
 ## Sources:
 
 1.  Class Slides
+
 2.  Notes from Professor Schroth who teachers STAT 324 at Cal Poly
+
 3.  [How to Check Linear Regression Assumptions in R](https://www.statology.org/check-linear-regression-assumptions-in-r/)
-4.  [How to insert link to a markdown document (Claude)](https://claude.ai/share/da4e516e-234a-4f68-bba1-5bd9d8939bda).
+
+4.  [How to insert link to a markdown document (Claude](https://claude.ai/share/da4e516e-234a-4f68-bba1-5bd9d8939bda)
+
+5.  [Comparing Regression Models with anova - YaRrr](https://bookdown.org/ndphillips/YaRrr/comparing-regression-models-with-anova.html)
