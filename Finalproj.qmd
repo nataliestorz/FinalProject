@@ -293,6 +293,11 @@ The results indicate that Traditional Study Hours is a significant significant p
 ## Sources:
 
 1.  Class Slides
+
 2.  Notes from Professor Schroth who teachers STAT 324 at Cal Poly
+
 3.  [How to Check Linear Regression Assumptions in R](https://www.statology.org/check-linear-regression-assumptions-in-r/)
-4.  [How to insert link to a markdown document (Claude)](https://claude.ai/share/da4e516e-234a-4f68-bba1-5bd9d8939bda).
+
+4.  [How to insert link to a markdown document (Claude](https://claude.ai/share/da4e516e-234a-4f68-bba1-5bd9d8939bda)
+
+5.  [Comparing Regression Models with anova - YaRrr](https://bookdown.org/ndphillips/YaRrr/comparing-regression-models-with-anova.html)
