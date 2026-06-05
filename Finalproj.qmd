@@ -13,7 +13,6 @@ theme: minty
 ai_impact_data <- read.csv("AI_student_impact.csv")
 ```
 
-
 ```{r}
 library(tidyverse)
 library(purrr)
@@ -25,10 +24,9 @@ library(broom)
 
 # Dataset description:
 
-The AI Impact on Students dataset contains information on student AI usage habits and academic outcomes, with each row representing a unique student identified by Student_ID. It includes demographic and academic variables such as Major_Category, Year_of_Study, and GPA both before (Pre_Semester_GPA) and after (Post_Semester_GPA) the semester. Several variables capture AI usage behavior, including Weekly_GenAI_Hours, Primary_Use_Case, Prompt_Engineering_Skill, and Tool_Diversity, while Institutional_Policy reflects the student's school-level context. Finally, the dataset includes student wellbeing and outcome measures such as Anxiety_Level_During_Exams, Skill_Retention_Score, Perceived_AI_Dependency, and Burnout_Risk_Level, making it well-suited for exploring how generative AI usage relates to student performance and wellbeing.This dataset includes sixteen columns and 50000 rows. 
+The AI Impact on Students dataset contains information on student AI usage habits and academic outcomes, with each row representing a unique student identified by Student_ID. It includes demographic and academic variables such as Major_Category, Year_of_Study, and GPA both before (Pre_Semester_GPA) and after (Post_Semester_GPA) the semester. Several variables capture AI usage behavior, including Weekly_GenAI_Hours, Primary_Use_Case, Prompt_Engineering_Skill, and Tool_Diversity, while Institutional_Policy reflects the student's school-level context. Finally, the dataset includes student wellbeing and outcome measures such as Anxiety_Level_During_Exams, Skill_Retention_Score, Perceived_AI_Dependency, and Burnout_Risk_Level, making it well-suited for exploring how generative AI usage relates to student performance and wellbeing.This dataset includes sixteen columns and 50000 rows.
 
-Data dictionary:
-<iframe src="AI_Impact_Students_Data_Dictionary.pdf" width="100%" height="600px"></iframe>
+Data dictionary: <iframe src="AI_Impact_Students_Data_Dictionary.pdf" width="100%" height="600px"></iframe>
 
 ## Question 1: Clean Data
 
@@ -53,7 +51,7 @@ clean_ai_impact <- ai_impact_data |>
 
 Before studying student outcomes, let’s first understand how students are using GenAI tools.
 
-## Question 2: Visualize 
+## Question 2: Visualize
 
 Visualize and compare the distribution of weekly generative AI use across major categories using an appropriate plot
 
@@ -113,7 +111,6 @@ The results suggest that higher `Weekly_GenAI_Hours` usage is most strongly asso
 
 In contrast, AI usage had weak negative correlations with post-semester GPA, skill retention, and traditional study hours. This may suggest that heavier AI use is associated with spending less time using traditional study methods and slightly lower skill retention, although most of these relationships are fairly weak.
 
-
 ## Question 4: Use iteration to compute summary statistics across multiple numeric columns.
 
 Write a function called `numeric_summary` that takes a numeric vector and returns a named vector with the mean, median, and standard deviation. Then use `map()` to apply it to the following columns: `Weekly_GenAI_Hours`, `Traditional_Study_Hours`, `Pre_Semester_GPA`, `Post_Semester_GPA`, and `Skill_Retention_Score`.
@@ -138,18 +135,15 @@ On average, students spend about 8.428 hours per week using GenAI and 11.209 hou
 
 # Significance Testing
 
-
 Now that we have a good idea of the students in our dataset, and how much they are using generative AI, let's now test its significance on students' respective GPAs by running simple linear regressions
 
+## Question 5: We now want to test the impact that Generative AI use has had on students' GPAs. Let's begin by using LaTeX do write out our population and sample regression equations with skill retention score (recorded post-semester and scored 1-100) as the response variable, and traditional study hours (no AI use) as our explanatory variable. (No need for any code, just write in the document.)
 
-## Question 5: We now want to test the impact that Generative AI use has had on students' GPAs. Let's begin by using LaTeX do write out our population and sample regression equations with skill retention score (recorded post-semester and scored 1-100) as the response variable, and traditional study hours (no AI use) as our explanatory variable. (No need for any code, just write in the document.) 
-
-:::{.callout-tip}
+::: callout-tip
 You may want to look at specific LaTeX notation when writing these in your quarto document!
 :::
 
-y = skill retention score
-x = traditional study hours
+y = skill retention score x = traditional study hours
 
 population equation:
 
@@ -159,8 +153,9 @@ sample equation:
 
 $\widehat{score} = \hat{\beta}_0 + \hat{\beta}_1 (numhours)$
 
-## Question 6: Since our data is so large, we will need to first subset the data and narrow down our analysis. Filter the data and resave it to "clean_ai_impact" so that it only keeps business majors who reported between 6 and 35 hours of traditional study hours. Additionally, remove all students who reported a Skill Retention Score of 100. Now let's fit our model we just specified and save it to the name "GPA_lm", so we can check that all the L.I.N.E. conditions are met. 
-:::{.callout-note}
+## Question 6: Since our data is so large, we will need to first subset the data and narrow down our analysis. Filter the data and resave it to "clean_ai_impact" so that it only keeps business majors who reported between 6 and 35 hours of traditional study hours. Additionally, remove all students who reported a Skill Retention Score of 100. Now let's fit our model we just specified and save it to the name "GPA_lm", so we can check that all the L.I.N.E. conditions are met.
+
+::: callout-note
 You will need to create some graphs (not base R) in order to show that these conditions are satisfied
 :::
 
@@ -174,8 +169,6 @@ GPA_lm <- lm(Skill_Retention_Score ~ Traditional_Study_Hours,
              data = clean_ai_impact)
 ```
 
-
-
 ```{r}
 # Check that the linearity condition is satisfied
 
@@ -187,9 +180,9 @@ clean_ai_impact |>
 
 ```
 
-Although there is a large cluster of points due to number of observations in our data, we still see pretty clear positive linear relationship between study hours and student skill retention score. We can pretty safely say that the linearity condition is satisfied. 
+Although there is a large cluster of points due to number of observations in our data, we still see pretty clear positive linear relationship between study hours and student skill retention score. We can pretty safely say that the linearity condition is satisfied.
 
-:::{.callout-note}
+::: callout-note
 Since every observation in the data represents a different student and the data is cross-sectional (not time series) the independence assumption is considered to be satisfied
 :::
 
@@ -208,8 +201,7 @@ GPA_lm |>
   theme(aspect.ratio = 1)
 ```
 
-Examining the residual distribution and the overlaying density curve we generated, we can comfortably say this condition is satisfied as well. Due to the distribution being unimodal, centered around 0, and showing no serious strong signs of skewness, the condition will be passed. 
-
+Examining the residual distribution and the overlaying density curve we generated, we can comfortably say this condition is satisfied as well. Due to the distribution being unimodal, centered around 0, and showing no serious strong signs of skewness, the condition will be passed.
 
 ```{r}
 # Check for equal variance
@@ -221,10 +213,9 @@ GPA_lm |>
              color = "red", lwd = 1.5)
 ```
 
-Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a wedge shape to the residuals as we get closer and closer to scores of 100 due to it being the cap. However, given the fact that the residuals are mostly centered around 0 and show not clear and obvious curves or patterns, we can move forward catiously and say that the condition is satisfied in order to continue our analysis and try to find some evidence of an association between our variables. 
+Using the fitted residuals plot here, we can see some issues with the equal variance condition. There seems to be a wedge shape to the residuals as we get closer and closer to scores of 100 due to it being the cap. However, given the fact that the residuals are mostly centered around 0 and show not clear and obvious curves or patterns, we can move forward catiously and say that the condition is satisfied in order to continue our analysis and try to find some evidence of an association between our variables.
 
 ## Question 7: Use the summary() function to produce a summary of the model from Question 6, including the coefficients, standard errors, p-values, and other relevant model statistics. Include a short conclusion about the output.
-
 
 ```{r}
 
@@ -240,8 +231,7 @@ The model shows that Traditional_Study_Hours is a statistically significant pred
 You will need this for an interpretation later in the lab.
 :::
 
-
-## Question 9: use example from wk 9 notes called "Example Cont. Regression Coefficients" to create a table showing differences in intercepts and coefficients between the 2 models created in Q5 and Q8
+## Question 8: use example from wk 9 notes called "Example Cont. Regression Coefficients" to create a table showing differences in intercepts and coefficients between the 2 models created in Q5 and Q8
 
 ```{r}
 GPA_lm2 <- lm(Post_Semester_GPA ~ Traditional_Study_Hours + Weekly_GenAI_Hours,
