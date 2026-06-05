@@ -156,15 +156,15 @@ sample equation:
 
 $\widehat{GPA} = \hat{\beta}_0 + \hat{\beta}_1 (numhours)$
 
-## Question 6: Since our data is so large, we will need to first subset the data and narrow down our analysis. Filter the data and resave it to "clean_ai_impact" so that it only keeps business majors who reported between 6 and 35 hours of traditional study hours. Additionally, remove all students who reported a Skill Retention Score of 100. Now let's fit our model we just specified and save it to the name "GPA_lm", so we can check that all the L.I.N.E. conditions are met.
+## Question 6: Since our data is so large, we will need to first subset the data and narrow down our analysis. Filter the data and resave it to "clean_ai_impact" so that it only keeps business majors who reported between 6 and 35 hours of traditional study hours. Additionally, remove all students who reported a Skill Retention Score of 100. Now let's fit our model we just specified and save it to the name "retention_lm", so we can check that all the L.I.N.E. conditions are met.
 
 ::: callout-note
 You will need to create some graphs (not base R) in order to show that these conditions are satisfied
 
 
 ```{r}
-# Run the regression model we just defined and save it to the name "GPA_lm"
-GPA_lm <- lm(Post_Semester_GPA ~ Traditional_Study_Hours,
+# Run the regression model we just defined and save it to the name "retention_lm"
+retention_lm <- lm(Skill_Retention_Score ~ Traditional_Study_Hours,
              data = clean_ai_impact)
 
 ```
@@ -174,7 +174,7 @@ GPA_lm <- lm(Post_Semester_GPA ~ Traditional_Study_Hours,
 
 clean_ai_impact |> 
   ggplot(aes(x = Traditional_Study_Hours,
-           y = Post_Semester_GPA)) +
+           y = Skill_Retention_Score)) +
   geom_point(alpha = 0.3) +
   geom_smooth(method = "lm", se = FALSE)+
   labs(x = "Number of hours studied weekly without AI Use",
@@ -191,7 +191,7 @@ Since every observation in the data represents a different student and the data 
 
 ```{r}
 # Check that the normality condition is met
-plot(GPA_lm, which = 2)
+plot(retention_lm, which = 2)
 
 ```
 
@@ -200,7 +200,7 @@ Examining the residual distribution and the overlaying density curve we generate
 
 ```{r}
 # Check for equal variance
-GPA_lm |> 
+retention_lm |> 
   augment() |> 
   ggplot(aes(x = .fitted, y = .resid)) +
   geom_point() +
@@ -262,8 +262,8 @@ In addition to the table, briefly explain in 1-2 sentences what the results sugg
 ```{r}
 # Create a formatted regression table
 tibble(
-  model = c("GPA_lm", "GPA_lm2"),
-  fit = list(GPA_lm, GPA_lm2)) |> 
+  model = c("retention_lm", "retention_lm2"),
+  fit = list(retention_lm, retention_lm2)) |> 
   mutate(coefs = map(fit, ~ broom::tidy(.x))) |> 
   select(model, coefs) |> 
   unnest(cols = coefs) |> 
@@ -279,8 +279,8 @@ tibble(
     TRUE ~ as.character(round(p.value, 3))
   )) |>
   mutate(model = recode(model,       
-    "GPA_lm"  = "Model 1: Traditional Study Hours Only",
-    "GPA_lm2" = "Model 2: Traditional Study Hours + Weekly GenAI Usage"
+    "retention_lm"  = "Model 1: Traditional Study Hours Only",
+    "retention_lm2" = "Model 2: Traditional Study Hours + Weekly GenAI Usage"
   )) |>
   gt(groupname_col = "model") |>
   fmt_number(
@@ -298,7 +298,7 @@ tibble(
   )
 ```
 
-The results indicate that Traditional Study Hours is a significant significant predictor of post-semester GPA, with each additional hour of traditional studying associated with an increase of approximately 0.013 GPA points (p \< .001). In contrast, Weekly GenAI Hours is not a significant predictor (p = .484) when added to the model already containing Traditional_Study_Hours, and the ANOVA comparison shows that adding GenAI usage to the model does not significantly improve model fit (F = 0.490, p = .484), suggesting that GenAI hours do not explain additional variation in GPA beyond traditional study time.
+The results indicate that Traditional Study Hours is a significant predictor of Skill Retention Score, with each additional hour of traditional studying associated with an increase of approximately 0.341 retention points (p < .001). Weekly GenAI Hours is also a significant predictor (p < .001), with each additional hour of GenAI use associated with a decrease of approximately 0.156 retention points after controlling for traditional study hours. The ANOVA comparison shows that adding GenAI usage significantly improves model fit (F = 476.25, p < .001), indicating that GenAI hours explain additional variation in skill retention beyond traditional study time. However, the overall explanatory power of the model remains modest (R² = .031), suggesting that most variation in skill retention is explained by factors not included in the model.
 
 ## Sources:
 
