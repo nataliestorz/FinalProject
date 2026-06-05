@@ -218,12 +218,12 @@ You will need this for an interpretation later in the lab.
 :::
 
 ```{r}
-GPA_lm2 <- lm(Post_Semester_GPA ~ Traditional_Study_Hours + Weekly_GenAI_Hours,
-              data = clean_ai_impact)
+retention_lm2 <- lm(Skill_Retention_Score ~ Traditional_Study_Hours + Weekly_GenAI_Hours,
+                    data = clean_ai_impact)
 
-summary(GPA_lm2)
+summary(retention_lm2)
 
-anova(GPA_lm, GPA_lm2)
+anova(retention_lm, retention_lm2)
 ```
 
 When Weekly_GenAI_Hour is added to the model, it is a statistically significant predictor of Skill_Retnetion_Score (p \< .001), with each additional hour of weekly GenAI use associated with a decrease of approximately 0.156 points in skill retention. The ANOVA comparison confirms that adding  Weekly_GenAI_Hour significantly improves model fit (F = 476.25, p \< .001), suggesting that weekly AI usage does explain additional variation in skill retention beyond traditional study hours alone. However, the R2 only increases from 0.022 to 0.031, meaning both models still explain very little of the overall variation in skill retention scores.
