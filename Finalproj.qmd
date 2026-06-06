@@ -225,7 +225,7 @@ The model shows that Traditional_Study_Hours is a statistically significant pred
 ## Question 8: Does including weekly AI usage as a predictor improve the model? Create a new model including the variable Weekly_GenAI_Hours and compare it to the model from question 6 using a Type 1 anova test.
 
 ::: callout-note
-You will need this for an interpretation later in the lab.
+You will need to interpret an F statistic later in the lab. Since we do not cover F statistics in this course, a resource has been linked to help you understand the concept. See the [Sources section](#sources).
 :::
 
 ```{r}
@@ -303,7 +303,7 @@ tibble(
 
 The results indicate that Traditional Study Hours is a significant predictor of Skill Retention Score, with each additional hour of traditional studying associated with an increase of approximately 0.341 retention points (p \< .001). Weekly GenAI Hours is also a significant predictor (p \< .001), with each additional hour of GenAI use associated with a decrease of approximately 0.156 retention points after controlling for traditional study hours. The ANOVA comparison shows that adding GenAI usage significantly improves model fit (F = 476.25, p \< .001), indicating that GenAI hours explain additional variation in skill retention beyond traditional study time. However, the overall explanatory power of the model remains modest (R² = .031), suggesting that most variation in skill retention is explained by factors not included in the model.
 
-## Sources:
+## Sources: {#sources}
 
 1.  Class Slides
 
