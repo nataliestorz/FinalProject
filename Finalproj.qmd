@@ -5,6 +5,9 @@ format: html
 editor: visual
 embed-resources: TRUE
 theme: minty
+execute: 
+  warning: false
+  message: false
 ---
 
 ## Load in the data/packages
