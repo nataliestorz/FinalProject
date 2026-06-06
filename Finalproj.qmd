@@ -260,7 +260,7 @@ Your table should:
 You will want to store both regression models inside a tibble and consider using a list-column to hold the model objects. Use map() together with broom::tidy() to extract regression coefficients from each model, and use unnest() to expand the coefficient results into rows. Use gt() or kableExtra() to create the final formatted table. View example from week 9 class slides for extra help.
 :::
 
-In addition to the table, briefly explain in 1-2 sentences what the results suggest about the predictors of post-semester GPA. You may also reference the anova table from question 8 to help draw conclusions.
+In addition to the table, briefly explain in a few sentences what the results suggest about the predictors of post-semester GPA. You may also reference the anova table from question 8 to help draw conclusions.
 
 ```{r}
 # Create a formatted regression table
