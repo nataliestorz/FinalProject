@@ -158,8 +158,9 @@ $\widehat{GPA} = \hat{\beta}_0 + \hat{\beta}_1 (numhours)$
 
 ## Question 6: Since our data is so large, we will need to first subset the data and narrow down our analysis. Filter the data and resave it to "clean_ai_impact" so that it only keeps business majors who reported between 6 and 35 hours of traditional study hours. Additionally, remove all students who reported a Skill Retention Score of 100. Now let's fit our model we just specified and save it to the name "retention_lm", so we can check that all the L.I.N.E. conditions are met.
 
-:::::: callout-note
+:::callout-note
 You will need to create some graphs (not base R) in order to show that these conditions are satisfied
+:::
 
 ```{r}
 # Run the regression model we just defined and save it to the name "retention_lm"
