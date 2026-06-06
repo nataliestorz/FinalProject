@@ -10,10 +10,6 @@ theme: minty
 ## Load in the data/packages
 
 ```{r}
-ai_impact_data <- read.csv("AI_student_impact.csv")
-```
-
-```{r}
 library(tidyverse)
 library(knitr)
 library(kableExtra)
