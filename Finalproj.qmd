@@ -6,7 +6,7 @@ editor: visual
 embed-resources: TRUE
 theme: minty
 execute: 
-  warning: true
+  warning: false
   message: false
 ---
 
