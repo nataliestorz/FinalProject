@@ -160,10 +160,14 @@ You will need to create some graphs (not base R) in order to show that these con
 
 ```{r}
 # Run the regression model we just defined and save it to the name "retention_lm"
+clean_ai_impact <- clean_ai_impact |> 
+  filter(Major_Category == "Business",
+         Traditional_Study_Hours > 5 & Traditional_Study_Hours <= 35 )
 retention_lm <- lm(Skill_Retention_Score ~ Traditional_Study_Hours,
              data = clean_ai_impact)
 
 ```
+
 
 ```{r}
 # Check that the linearity condition is satisfied
@@ -186,8 +190,16 @@ Since every observation in the data represents a different student and the data 
 
 ```{r}
 # Check that the normality condition is met
-plot(retention_lm, which = 2)
-
+resid_sd <- sd(retention_lm$residuals)
+  
+retention_lm |> 
+  broom::augment() |> 
+  ggplot(aes(x = .resid)) +
+  geom_histogram(aes(y = ..density..)) +
+  stat_function(fun = ~ dnorm(.x, mean = 0, sd = resid_sd),
+                color = "steelblue", lwd = 1.5) +
+  xlab("Residuals") +
+  theme(aspect.ratio = 1)
 ```
 
 Examining the residual distribution and the overlaying density curve we generated, we can comfortably say this condition is satisfied as well. Due to the distribution being unimodal, centered around 0, and showing no serious strong signs of skewness, the condition will be passed.
@@ -212,7 +224,7 @@ summary(retention_lm)
 
 ```
 
-The model shows that Traditional_Study_Hours is a statistically significant predictor of Post_Semester_GPA (p \< 0.001). For each hour of traditional study per week, GPA is estimated to increase by approximately 0.013 points, with an intercept of 3.2. The R\^2 value of .01895 suggests that traditional study hours alone explains only a small portion of the variation in GPA.
+The model shows that Traditional_Study_Hours is a statistically significant predictor of Post_Semester_GPA (p \< 0.001). For each hour of traditional study per week, a student's retention score is estimated to increase by approximately 0.386 points, with an intercept of 70.92. The R\^2 value of .01679 suggests that traditional study hours alone explains only a small portion of the variation in students' retention scores.
 
 ## Question 8: Does including weekly AI usage as a predictor improve the model? Create a new model including the variable Weekly_GenAI_Hours and compare it to the model from question 6 using a Type 1 anova test.
 
@@ -229,7 +241,7 @@ summary(retention_lm2)
 anova(retention_lm, retention_lm2)
 ```
 
-When Weekly_GenAI_Hour is added to the model, it is a statistically significant predictor of Skill_Retnetion_Score (p \< .001), with each additional hour of weekly GenAI use associated with a decrease of approximately 0.156 points in skill retention. The ANOVA comparison confirms that adding  Weekly_GenAI_Hour significantly improves model fit (F = 476.25, p \< .001), suggesting that weekly AI usage does explain additional variation in skill retention beyond traditional study hours alone. However, the R2 only increases from 0.022 to 0.031, meaning both models still explain very little of the overall variation in skill retention scores.
+When Weekly_GenAI_Hour is added to the model, it is a statistically significant predictor of Skill_Retention_Score (p \< .001), with each additional hour of weekly GenAI use associated with a decrease of approximately 0.156 points in skill retention. The ANOVA comparison confirms that adding  Weekly_GenAI_Hour significantly improves model fit (F = 476.25, p \< .001), suggesting that weekly AI usage does explain additional variation in skill retention beyond traditional study hours alone. However, the R2 only increases from 0.022 to 0.031, meaning both models still explain very little of the overall variation in skill retention scores.
 
 **\*Referenced Source 5**\*
 
